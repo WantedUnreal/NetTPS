@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+ï»¿// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
@@ -18,6 +18,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 UCLASS(config=Game)
 class ANetTPSCharacter : public ACharacter
 {
+
 	GENERATED_BODY()
 
 	/** Camera boom positioning the camera behind the character */
@@ -75,13 +76,13 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 public:
-	// ÃÑÀ» ºÙÀÏ ÄÄÆ÷³ÍÆ®
+	// ì´ì„ ë¶™ì¼ ì»´í¬ë„ŒíŠ¸
 	UPROPERTY(EditAnywhere)
 	class USceneComponent* compGun;
 
-	// ÇöÀç ÃÑÀ» µé°í ÀÖ´ÂÁö ¿©ºÎ
+	// í˜„ì¬ ì´ì„ ë“¤ê³  ìˆëŠ”ì§€ ì—¬ë¶€
 	bool bHasPistol = false;
-	// ¾î¶² ÃÑÀ» µé°í ÀÖ´ÂÁö
+	// ì–´ë–¤ ì´ì„ ë“¤ê³  ìˆëŠ”ì§€
 	UPROPERTY()
 	AActor* ownedPistol = nullptr;
 };

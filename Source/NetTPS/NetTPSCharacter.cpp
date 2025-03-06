@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+ï»¿// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "NetTPSCharacter.h"
 #include "Engine/LocalPlayer.h"
@@ -92,7 +92,7 @@ void ANetTPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ANetTPSCharacter::Look);
 
-		// ÃÑÁı±â ÇÔ¼ö µî·Ï
+		// ì´ì§‘ê¸° í•¨ìˆ˜ ë“±ë¡
 		EnhancedInputComponent->BindAction(TakePistolAction, ETriggerEvent::Started, this, &ANetTPSCharacter::TakePistol);
 	}
 	else
@@ -139,50 +139,51 @@ void ANetTPSCharacter::Look(const FInputActionValue& Value)
 
 void ANetTPSCharacter::TakePistol()
 {
-	// ³»°¡ ÃÑÀ» µé°í ÀÖÁö ¾Ê´Ù¸é
+	// ë‚´ê°€ ì´ì„ ë“¤ê³  ìˆì§€ ì•Šë‹¤ë©´
 	if (bHasPistol == false)
 	{
-		// ¹Ù´Ú¿¡ ÀÖ´Â ÃÑÀ» °Ë»öÇÏÀÚ.
+		// ë°”ë‹¥ì— ìˆëŠ” ì´ì„ ê²€ìƒ‰í•˜ì.
 		TArray<AActor*> allPistols;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APistol::StaticClass(), allPistols);
 	
 		for (int32 i = 0; i < allPistols.Num(); i++)
 		{
-			// ¼ÒÀ¯ÀÚ°¡ ÀÖ´Ï?
+			// ì†Œìœ ìê°€ ìˆë‹ˆ?
 			if(allPistols[i]->GetOwner() != nullptr) continue;
 
-			// ÇöÀç µé°í ÀÖ´Â ÃÑ ¼³Á¤
+			// í˜„ì¬ ë“¤ê³  ìˆëŠ” ì´ ì„¤ì •
 			ownedPistol = allPistols[i];
-			// ¼ÒÀ¯ÀÚ¸¦ ³ª·Î ¼³Á¤
+			// ì†Œìœ ìë¥¼ ë‚˜ë¡œ ì„¤ì •
 			ownedPistol->SetOwner(this);
 
-			// ÇöÀç ÃÑÀ» µé°í ÀÖ´Â »óÅÂ
+			// í˜„ì¬ ì´ì„ ë“¤ê³  ìˆëŠ” ìƒíƒœ
 			bHasPistol = true;
 
-			// ¹°¸®ÀûÀÎ ¿òÁ÷ÀÓÀ» ²¨ÁÖÀÚ.
+			// ë¬¼ë¦¬ì ì¸ ì›€ì§ì„ì„ êº¼ì£¼ì.
 			UStaticMeshComponent* comp = allPistols[i]->GetComponentByClass<UStaticMeshComponent>();
 			comp->SetSimulatePhysics(false);
-			// °Ë»öµÈ ÃÑÀ» compGun ¿¡ ÀÚ½ÄÀ¸·Î ºÙÀÌÀÚ.
+			// ê²€ìƒ‰ëœ ì´ì„ compGun ì— ìì‹ìœ¼ë¡œ ë¶™ì´ì.
 			allPistols[i]->AttachToComponent(compGun, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
 			break;
 		}
 	}
 
-	// ³»°¡ ÃÑÀ» µé°í ÀÖ´Ù¸é
+
+	// ë‚´ê°€ ì´ì„ ë“¤ê³  ìˆë‹¤ë©´
 	else
 	{
-		// ¹°¸®ÀûÀÎ ¿òÁ÷ÀÓ ÄÑÁÖÀÚ.
+		// ë¬¼ë¦¬ì ì¸ ì›€ì§ì„ ì¼œì£¼ì.
 		UStaticMeshComponent* comp = ownedPistol->GetComponentByClass<UStaticMeshComponent>();
 		comp->SetSimulatePhysics(true);
-		// ÃÑÀ» ¹Ù´Ú¿¡ ¶³¾î¶ß¸®ÀÚ.
+		// ì´ì„ ë°”ë‹¥ì— ë–¨ì–´ëœ¨ë¦¬ì.
 		ownedPistol->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		// ÇöÀç ÃÑÀ» µé°í ÀÖÁö ¾ÊÀº »óÅÂ
+		// í˜„ì¬ ì´ì„ ë“¤ê³  ìˆì§€ ì•Šì€ ìƒíƒœ
 		bHasPistol = false;
 
-		// ¼ÒÀ¯ÀÚ¸¦ ¾ø°Ô ÇÏÀÚ.
+		// ì†Œìœ ìë¥¼ ì—†ê²Œ í•˜ì.
 		ownedPistol->SetOwner(nullptr);
-		// ÇöÀç µé°í ÀÖ´Â ÃÑÀ» nullptr ·Î!
+		// í˜„ì¬ ë“¤ê³  ìˆëŠ” ì´ì„ nullptr ë¡œ!
 		ownedPistol = nullptr;
 	}
 }
