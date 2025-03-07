@@ -48,6 +48,9 @@ class ANetTPSCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* TakePistolAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* FireAction;
+
 public:
 	ANetTPSCharacter();
 	
@@ -61,6 +64,7 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 	void TakePistol();
+	void Fire();
 			
 
 protected:
@@ -85,5 +89,9 @@ public:
 	// 어떤 총을 들고 있는지
 	UPROPERTY()
 	AActor* ownedPistol = nullptr;
+
+	// 총을 집을 수 있는 범위
+	UPROPERTY(EditAnywhere)
+	float distanceToGun = 200;
 };
 

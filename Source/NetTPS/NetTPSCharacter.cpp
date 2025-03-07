@@ -52,7 +52,6 @@ ANetTPSCharacter::ANetTPSCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-
 	
 	compGun = CreateDefaultSubobject<USceneComponent>(TEXT("GUN"));
 	compGun->SetupAttachment(GetMesh(), TEXT("GunPosition"));
@@ -94,6 +93,9 @@ void ANetTPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 		// 총집기 함수 등록
 		EnhancedInputComponent->BindAction(TakePistolAction, ETriggerEvent::Started, this, &ANetTPSCharacter::TakePistol);
+
+		// 총쏘기 함수 등록
+		EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Started, this, &ANetTPSCharacter::Fire);
 	}
 	else
 	{
@@ -138,21 +140,45 @@ void ANetTPSCharacter::Look(const FInputActionValue& Value)
 }
 
 void ANetTPSCharacter::TakePistol()
-{
+{	
 	// 내가 총을 들고 있지 않다면
 	if (bHasPistol == false)
 	{
 		// 바닥에 있는 총을 검색하자.
 		TArray<AActor*> allPistols;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APistol::StaticClass(), allPistols);
-	
+
+		// 현재까지 최단거리 (초기 값을 float 의 최대치로)
+		float closestDist = std::numeric_limits<float>::max();
+		// 현재까지 최단거리의 총
+		AActor* closestPistol = nullptr;
+		
 		for (int32 i = 0; i < allPistols.Num(); i++)
 		{
 			// 소유자가 있니?
 			if(allPistols[i]->GetOwner() != nullptr) continue;
 
+			// 나와 총의 거리를 구하자.
+			float dist = FVector::Distance(allPistols[i]->GetActorLocation(), GetActorLocation());
+
+			// 그 거리가 총을 주울 수 있는 범위 밖에 있으면
+			if (dist > distanceToGun) continue;			
+			
+			// 그 거리가 최단거리보다 작으면
+			if (dist < closestDist)
+			{
+				// 최단거리 갱신
+				closestDist = dist;
+				// 최단거리 총 갱신
+				closestPistol = allPistols[i];
+			}			
+		}
+
+		// 만약에 최단거리 총이 있다면
+		if (closestPistol != nullptr)
+		{
 			// 현재 들고 있는 총 설정
-			ownedPistol = allPistols[i];
+			ownedPistol = closestPistol;
 			// 소유자를 나로 설정
 			ownedPistol->SetOwner(this);
 
@@ -160,13 +186,17 @@ void ANetTPSCharacter::TakePistol()
 			bHasPistol = true;
 
 			// 물리적인 움직임을 꺼주자.
-			UStaticMeshComponent* comp = allPistols[i]->GetComponentByClass<UStaticMeshComponent>();
+			UStaticMeshComponent* comp = ownedPistol->GetComponentByClass<UStaticMeshComponent>();
 			comp->SetSimulatePhysics(false);
 			// 검색된 총을 compGun 에 자식으로 붙이자.
-			allPistols[i]->AttachToComponent(compGun, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+			ownedPistol->AttachToComponent(compGun, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 
-			break;
-		}
+			// 총 들었을 때 움직이는 설정 변경
+			bUseControllerRotationYaw = true;
+			GetCharacterMovement()->bOrientRotationToMovement = false;
+			CameraBoom->TargetArmLength = 150;
+			CameraBoom->SetRelativeLocation(FVector(0, 40, 60));
+		}			
 	}
 
 
@@ -185,5 +215,24 @@ void ANetTPSCharacter::TakePistol()
 		ownedPistol->SetOwner(nullptr);
 		// 현재 들고 있는 총을 nullptr 로!
 		ownedPistol = nullptr;
+
+		// 총 들었을 때 움직이는 설정 변경
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		CameraBoom->TargetArmLength = 400;
+		CameraBoom->SetRelativeLocation(FVector(0, 0, 0));
 	}
+}
+
+void ANetTPSCharacter::Fire()
+{
+	// 시작 지점
+	FVector startPos = FollowCamera->GetComponentLocation();
+	// 종료 지점
+	FVector endPos = startPos + FollowCamera->GetForwardVector() * 100000;
+	// 부딪혔을 때 그 정보를 담을 변수
+	
+	// LineTrace 실행
+	// 만약에 부딪히였다면
+	// 총알 이펙트 표현
 }
