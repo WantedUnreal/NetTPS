@@ -73,6 +73,9 @@ protected:
 	void InitBulletUI();
 	void Reload();
 
+	void DamageProcess(float damage);
+	void BillboardHP();
+
 public:
 	void ReloadComplete();
 
@@ -123,5 +126,8 @@ public:
 	TSubclassOf<class UMainUI> mainUIWidget;
 	UPROPERTY()
 	class UMainUI* mainUI; 
+
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* compHP;
 };
 

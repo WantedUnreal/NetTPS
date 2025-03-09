@@ -12,8 +12,11 @@
 #include "InputActionValue.h"
 
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Components/WidgetComponent.h"
 #include "Pistol.h"
 #include "MainUI.h"
+#include "HealthBar.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -58,6 +61,9 @@ ANetTPSCharacter::ANetTPSCharacter()
 	compGun->SetupAttachment(GetMesh(), TEXT("GunPosition"));
 	compGun->SetRelativeLocation(FVector(-7.144f, 3.68f, 4.136f));
 	compGun->SetRelativeRotation(FRotator(3.406493f, 75.699540f, 6.642412f));
+
+	compHP = CreateDefaultSubobject<UWidgetComponent>(TEXT("HP"));
+	compHP->SetupAttachment(RootComponent);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -78,6 +84,8 @@ void ANetTPSCharacter::Tick(float DeltaSeconds)
 	{
 		Reload();
 	}
+
+	BillboardHP();
 }
 
 void ANetTPSCharacter::NotifyControllerChanged()
@@ -278,6 +286,13 @@ void ANetTPSCharacter::Fire()
 	{
 		// 총알 이펙트 표현
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), gunEffect, hitInfo.Location, FRotator(), true);
+
+		ANetTPSCharacter* player = Cast<ANetTPSCharacter>(hitInfo.GetActor());
+		if (player)
+		{
+			// 데미지 주자
+			player->DamageProcess(10);
+		}
 	}
 
 	// 총 쏘는 애니메이션 실행
@@ -315,6 +330,19 @@ void ANetTPSCharacter::Reload()
 	bReloading = true;
 
 	PlayAnimMontage(fireMontage, 1.0f, TEXT("Reload"));
+}
+
+void ANetTPSCharacter::DamageProcess(float damage)
+{
+	UHealthBar* hpBar = Cast<UHealthBar>(compHP->GetWidget());
+	hpBar->UpdateHPBar(damage);
+}
+
+void ANetTPSCharacter::BillboardHP()
+{
+	AActor* cam = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+	FRotator rot = UKismetMathLibrary::MakeRotFromXZ(-cam->GetActorForwardVector(), cam->GetActorUpVector());
+	compHP->SetWorldRotation(rot);
 }
 
 void ANetTPSCharacter::ReloadComplete()
