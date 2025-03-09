@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "NetPlayerAnimInstance.h"
@@ -27,4 +27,9 @@ void UNetPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		// 앞 / 뒤 에 따른 애니메이션 값
 		dirV = FVector::DotProduct(player->GetVelocity(), player->GetActorForwardVector());
 	}
+}
+
+void UNetPlayerAnimInstance::AnimNotify_ReloadComplete()
+{
+	player->ReloadComplete();
 }

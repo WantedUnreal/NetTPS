@@ -65,9 +65,21 @@ protected:
 
 	void TakePistol();
 	void Fire();
+
+	// UI 초기화 함수
+	void InitUIWidget();
 			
+	// 총알 채우기
+	void InitBulletUI();
+	void Reload();
+
+public:
+	void ReloadComplete();
 
 protected:
+
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaSeconds) override;
 
 	virtual void NotifyControllerChanged() override;
 
@@ -86,12 +98,30 @@ public:
 
 	// 현재 총을 들고 있는지 여부
 	bool bHasPistol = false;
+
+	// 재장전 중인지 여부
+	bool bReloading = false;
+
 	// 어떤 총을 들고 있는지
 	UPROPERTY()
-	AActor* ownedPistol = nullptr;
+	class APistol* ownedPistol = nullptr;
 
 	// 총을 집을 수 있는 범위
 	UPROPERTY(EditAnywhere)
 	float distanceToGun = 200;
+
+	// 피격 이펙트
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* gunEffect;
+
+	// Fire 몽타주
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* fireMontage;
+
+	// MainUI 위젯
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UMainUI> mainUIWidget;
+	UPROPERTY()
+	class UMainUI* mainUI; 
 };
 
