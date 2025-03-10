@@ -28,3 +28,9 @@ void UNetPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		dirV = FVector::DotProduct(player->GetVelocity(), player->GetActorForwardVector());
 	}
 }
+
+void UNetPlayerAnimInstance::AnimNotify_OnReloadFinish()
+{
+	// 플레어의 Reload 완료 함수 호출
+	player->ReloadComplete();
+}

@@ -69,6 +69,10 @@ protected:
 
 protected:
 
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaSeconds) override;
+
 	virtual void NotifyControllerChanged() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -88,10 +92,33 @@ public:
 	bool bHasPistol = false;
 	// 어떤 총을 들고 있는지
 	UPROPERTY()
-	AActor* ownedPistol = nullptr;
+	class APistol* ownedPistol = nullptr;
 
 	// 총을 집을 수 있는 범위
 	UPROPERTY(EditAnywhere)
 	float distanceToGun = 200;
+
+	// 총알 피격 이펙트
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* gunEffect;
+
+	// 총 관련 몽타주
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* fireMontage;
+
+	// MainUI 위젯
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UMainUI> mainUIWidget;
+	UPROPERTY()
+	class UMainUI* mainUI;
+
+	// 총알 UI 셋팅
+	void InitBulletUI();
+
+	// 총알 재장전 시작
+	void Reload();
+
+	// 총알 재장전 완료
+	void ReloadComplete();
 };
 

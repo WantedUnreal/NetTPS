@@ -15,7 +15,9 @@ APistol::APistol()
 void APistol::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// 현재 총알 갯수 초기화
+	currBulletCount = maxBulletCount;
 }
 
 // Called every frame

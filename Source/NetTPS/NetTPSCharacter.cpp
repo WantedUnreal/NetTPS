@@ -13,6 +13,7 @@
 
 #include "Kismet/GameplayStatics.h"
 #include "Pistol.h"
+#include "MainUI.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -103,6 +104,35 @@ void ANetTPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	}
 }
 
+void ANetTPSCharacter::InitBulletUI()
+{
+	// 현재 총알 다 지우자.
+	mainUI->PopBulletAll();
+	
+	// 현재 총알 갯수만큼 총알을 채우자.
+	for (int32 i = 0; i < ownedPistol->currBulletCount; i++)
+	{
+		mainUI->AddBullet();
+	}
+}
+
+void ANetTPSCharacter::Reload()
+{
+	// 만약에 총을 들고 있지 않으면 함수 나가자.
+	if (bHasPistol == false) return;
+
+	// 재장전 애니메이션 실행
+	PlayAnimMontage(fireMontage, 1.0f, TEXT("Reload"));
+}
+
+void ANetTPSCharacter::ReloadComplete()
+{
+	// 총알 갯수 최대 갯수 설정
+	ownedPistol->currBulletCount = ownedPistol->maxBulletCount;
+	// 총알 UI 가득 채우자.
+	InitBulletUI();
+}
+
 void ANetTPSCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
@@ -178,7 +208,7 @@ void ANetTPSCharacter::TakePistol()
 		if (closestPistol != nullptr)
 		{
 			// 현재 들고 있는 총 설정
-			ownedPistol = closestPistol;
+			ownedPistol = Cast<APistol>(closestPistol);
 			// 소유자를 나로 설정
 			ownedPistol->SetOwner(this);
 
@@ -196,6 +226,12 @@ void ANetTPSCharacter::TakePistol()
 			GetCharacterMovement()->bOrientRotationToMovement = false;
 			CameraBoom->TargetArmLength = 150;
 			CameraBoom->SetRelativeLocation(FVector(0, 40, 60));
+
+			// crosshair 보이게
+			mainUI->ShowCrosshair(true);
+
+			// 총알 갯수 설정
+			InitBulletUI();
 		}			
 	}
 
@@ -221,18 +257,73 @@ void ANetTPSCharacter::TakePistol()
 		GetCharacterMovement()->bOrientRotationToMovement = true;
 		CameraBoom->TargetArmLength = 400;
 		CameraBoom->SetRelativeLocation(FVector(0, 0, 0));
+
+		// crosshair 보이지 않게
+		mainUI->ShowCrosshair(false);
+		// 총알 UI 모두 삭제
+		mainUI->PopBulletAll();
 	}
 }
 
 void ANetTPSCharacter::Fire()
 {
+	// 만약에 총을 들고있지 않으면 함수를 나가자.
+	if (bHasPistol == false) return;
+	// 만약에 총알갯수가 0이라면 함수를 나가자.
+	if (ownedPistol->currBulletCount <= 0) return;
+	
 	// 시작 지점
 	FVector startPos = FollowCamera->GetComponentLocation();
 	// 종료 지점
 	FVector endPos = startPos + FollowCamera->GetForwardVector() * 100000;
+	// 그 외 옵션
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(this);
 	// 부딪혔을 때 그 정보를 담을 변수
-	
+	FHitResult hitInfo;
 	// LineTrace 실행
+	bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECollisionChannel::ECC_Visibility, params);
 	// 만약에 부딪히였다면
-	// 총알 이펙트 표현
+	if (bHit)
+	{
+		// 총알 이펙트 표현
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), gunEffect, hitInfo.Location, FRotator(), true);
+	}
+
+	// 총 쏘는 애니메이션 실행
+	PlayAnimMontage(fireMontage, 2.0f, TEXT("Fire"));
+	// 총알 소모
+	ownedPistol->currBulletCount--;
+	// 총알 UI 하나 제거
+	mainUI->PopBullet(ownedPistol->currBulletCount);
+}
+
+void ANetTPSCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// MainUI 만들자
+	mainUI = CreateWidget<UMainUI>(GetWorld(), mainUIWidget);
+	mainUI->AddToViewport();
+}
+
+void ANetTPSCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	// 만약에 R 키를 눌렀다면
+	if (GetWorld()->GetFirstPlayerController()->WasInputKeyJustPressed(EKeys::R))
+	{
+		Reload();
+	}
+	// 만약에 R 키를 떼었다면
+	if (GetWorld()->GetFirstPlayerController()->WasInputKeyJustReleased(EKeys::R))
+	{
+		
+	}
+	// 만약에 R 키를 누르고 있다면
+	if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::R))
+	{
+		
+	}
 }

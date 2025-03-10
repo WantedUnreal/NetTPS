@@ -23,4 +23,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+public:
+	// 최대 총알 갯수
+	float maxBulletCount = 10;
+	// 현재 총알 갯수
+	float currBulletCount = 0;
+
 };
