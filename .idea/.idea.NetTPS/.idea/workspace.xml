@@ -14,17 +14,9 @@
   <component name="ChangeListManager">
     <list default="true" id="2afd122c-7abd-45d6-859f-d7ff018f70af" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.NetTPS/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NetTPS/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Characters/Mannequins/Meshes/SK_Mannequin.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Characters/Mannequins/Meshes/SK_Mannequin.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Net/Animations/ABP_Manny.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Net/Animations/ABP_Manny.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Net/Blueprints/BP_ThirdPersonCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Net/Blueprints/BP_ThirdPersonCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/NetTPS.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/NetTPS.uproject" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetPlayerAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetPlayerAnimInstance.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetPlayerAnimInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetPlayerAnimInstance.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPS.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPS.Build.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/Pistol.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/Pistol.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/Pistol.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/Pistol.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -36,6 +28,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="cidr-memory-view://0" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -168,7 +163,7 @@
       <option name="presentableId" value="Default" />
       <updated>1741304160465</updated>
       <workItem from="1741304161833" duration="11469000" />
-      <workItem from="1741564125490" duration="10248000" />
+      <workItem from="1741564125490" duration="16069000" />
     </task>
     <servers />
   </component>
@@ -178,5 +173,16 @@
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/Source/NetTPS/HealthBar.cpp</url>
+          <line>18</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

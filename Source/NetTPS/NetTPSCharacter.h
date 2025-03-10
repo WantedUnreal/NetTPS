@@ -88,8 +88,16 @@ public:
 	UPROPERTY(EditAnywhere)
 	class USceneComponent* compGun;
 
+	// HealthBar  붙일 컴포넌트
+	UPROPERTY(EditAnywhere)
+	class UWidgetComponent* compHP;
+
 	// 현재 총을 들고 있는지 여부
 	bool bHasPistol = false;
+
+	// 현재 재장전 중인지 여부
+	bool bReloading = false;
+	
 	// 어떤 총을 들고 있는지
 	UPROPERTY()
 	class APistol* ownedPistol = nullptr;
@@ -120,5 +128,10 @@ public:
 
 	// 총알 재장전 완료
 	void ReloadComplete();
+
+	// 피격 당했을 때 호출되는 함수
+	void DamageProcess(float damage);
+	// HPBar billboard 처리
+	void BillboardHP();
 };
 

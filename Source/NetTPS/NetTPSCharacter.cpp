@@ -9,11 +9,14 @@
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "HealthBar.h"
 #include "InputActionValue.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "Pistol.h"
 #include "MainUI.h"
+#include "Components/WidgetComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -53,11 +56,16 @@ ANetTPSCharacter::ANetTPSCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
-	
+
+	// 총 관련 컴포넌트
 	compGun = CreateDefaultSubobject<USceneComponent>(TEXT("GUN"));
 	compGun->SetupAttachment(GetMesh(), TEXT("GunPosition"));
 	compGun->SetRelativeLocation(FVector(-7.144f, 3.68f, 4.136f));
 	compGun->SetRelativeRotation(FRotator(3.406493f, 75.699540f, 6.642412f));
+
+	// HealthBar 컴포넌트
+	compHP = CreateDefaultSubobject<UWidgetComponent>(TEXT("HP"));
+	compHP->SetupAttachment(RootComponent);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -121,16 +129,45 @@ void ANetTPSCharacter::Reload()
 	// 만약에 총을 들고 있지 않으면 함수 나가자.
 	if (bHasPistol == false) return;
 
+	// 만약에 재장전 중이면 함수를 나가자.
+	if (bReloading) return;
+
+	// 만약에 총알이 최대라면 함수를 나가자.
+	if (ownedPistol->currBulletCount == ownedPistol->maxBulletCount) return;
+
+	// 재장전 중이다라고 설정
+	bReloading = true;
+
 	// 재장전 애니메이션 실행
 	PlayAnimMontage(fireMontage, 1.0f, TEXT("Reload"));
 }
 
 void ANetTPSCharacter::ReloadComplete()
 {
+	// 재장전 끝이다 설정
+	bReloading = false;
 	// 총알 갯수 최대 갯수 설정
 	ownedPistol->currBulletCount = ownedPistol->maxBulletCount;
 	// 총알 UI 가득 채우자.
 	InitBulletUI();
+}
+
+void ANetTPSCharacter::DamageProcess(float damage)
+{
+	// HealthBar 클래스 가져오자.
+	UHealthBar* hpBar =  Cast<UHealthBar>(compHP->GetWidget());
+	// 가져온 클래스에 있는 UpdateHPBar 실행
+	hpBar->UpdateHPBar(damage);
+}
+
+void ANetTPSCharacter::BillboardHP()
+{
+	// 내가 컨트롤하고 있는 카메라를 가져오자.
+	AActor* cam = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+	// 카메라의 앞방향(반대), 윗방향을 이용해서 Rotator 를 구하자.
+	FRotator rot = UKismetMathLibrary::MakeRotFromXZ(-cam->GetActorForwardVector(), cam->GetActorUpVector());
+	// compHP 를 구한  Rotator 값으로 설정.
+	compHP->SetWorldRotation(rot);
 }
 
 void ANetTPSCharacter::Move(const FInputActionValue& Value)
@@ -239,6 +276,9 @@ void ANetTPSCharacter::TakePistol()
 	// 내가 총을 들고 있다면
 	else
 	{
+		// 만약에 재장전 중이라면 함수를 나가자.
+		if (bReloading) return;
+		
 		// 물리적인 움직임 켜주자.
 		UStaticMeshComponent* comp = ownedPistol->GetComponentByClass<UStaticMeshComponent>();
 		comp->SetSimulatePhysics(true);
@@ -271,6 +311,8 @@ void ANetTPSCharacter::Fire()
 	if (bHasPistol == false) return;
 	// 만약에 총알갯수가 0이라면 함수를 나가자.
 	if (ownedPistol->currBulletCount <= 0) return;
+	// 만약에 재장전 중이면 함수를 나가자.
+	if (bReloading) return;
 	
 	// 시작 지점
 	FVector startPos = FollowCamera->GetComponentLocation();
@@ -288,6 +330,13 @@ void ANetTPSCharacter::Fire()
 	{
 		// 총알 이펙트 표현
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), gunEffect, hitInfo.Location, FRotator(), true);
+		// 만약에 맞은 Actor 가 NetTPSCharacter 라면
+		ANetTPSCharacter* player = Cast<ANetTPSCharacter>(hitInfo.GetActor());
+		if (player)
+		{
+			// HP 를 줄이자.
+			player->DamageProcess(10);
+		}
 	}
 
 	// 총 쏘는 애니메이션 실행
@@ -326,4 +375,7 @@ void ANetTPSCharacter::Tick(float DeltaSeconds)
 	{
 		
 	}
+
+	// HealtBar 계속 나를 바라보게
+	BillboardHP();
 }
