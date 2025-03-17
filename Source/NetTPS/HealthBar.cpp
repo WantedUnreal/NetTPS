@@ -13,7 +13,7 @@ void UHealthBar::NativeConstruct()
 	currHP = maxHP;
 }
 
-void UHealthBar::UpdateHPBar(float damage)
+float UHealthBar::UpdateHPBar(float damage)
 {
 	// 현재 HP 를 damage 만큼 줄이자.
 	currHP -= damage;
@@ -21,4 +21,6 @@ void UHealthBar::UpdateHPBar(float damage)
 	float percent = currHP / maxHP;
 	// 위에 계산된 값을 hpBar 에 설정
 	hpBar->SetPercent(percent);
+
+	return currHP;
 }

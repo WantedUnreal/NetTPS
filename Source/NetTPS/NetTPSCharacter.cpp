@@ -157,7 +157,13 @@ void ANetTPSCharacter::DamageProcess(float damage)
 	// HealthBar 클래스 가져오자.
 	UHealthBar* hpBar =  Cast<UHealthBar>(compHP->GetWidget());
 	// 가져온 클래스에 있는 UpdateHPBar 실행
-	hpBar->UpdateHPBar(damage);
+	float hp = hpBar->UpdateHPBar(damage);
+	// 만약에 hp 0보다 작으면
+	if (hp <= 0)
+	{
+		// 죽어라
+		isDead = true;
+	}
 }
 
 void ANetTPSCharacter::BillboardHP()
@@ -168,6 +174,17 @@ void ANetTPSCharacter::BillboardHP()
 	FRotator rot = UKismetMathLibrary::MakeRotFromXZ(-cam->GetActorForwardVector(), cam->GetActorUpVector());
 	// compHP 를 구한  Rotator 값으로 설정.
 	compHP->SetWorldRotation(rot);
+}
+
+void ANetTPSCharacter::PrintNetLog()
+{
+	FString conStr = GetNetConnection() != nullptr ? TEXT("Valid Connection") : TEXT("Invalid Connection");
+	FString ownerStr = GetOwner() != nullptr ? GetOwner()->GetActorNameOrLabel() : TEXT("No Owner");
+	FString mineStr = IsLocallyControlled() ? TEXT("내 것") : TEXT("남의 것");
+
+	FString logStr = FString ::Printf(TEXT("Connection : %s\r\nOwner : %s\r\nMine : %s"), *conStr, *ownerStr, *mineStr);
+	
+	DrawDebugString(GetWorld(), GetActorLocation(), logStr, nullptr, FColor::Yellow, 0, true);
 }
 
 void ANetTPSCharacter::Move(const FInputActionValue& Value)
@@ -336,6 +353,7 @@ void ANetTPSCharacter::Fire()
 		{
 			// HP 를 줄이자.
 			player->DamageProcess(10);
+			
 		}
 	}
 
@@ -354,6 +372,9 @@ void ANetTPSCharacter::BeginPlay()
 	// MainUI 만들자
 	mainUI = CreateWidget<UMainUI>(GetWorld(), mainUIWidget);
 	mainUI->AddToViewport();
+
+	// HPBar 그림자 지우자.
+	compHP->SetCastShadow(false);
 }
 
 void ANetTPSCharacter::Tick(float DeltaSeconds)
@@ -378,4 +399,6 @@ void ANetTPSCharacter::Tick(float DeltaSeconds)
 
 	// HealtBar 계속 나를 바라보게
 	BillboardHP();
+
+	PrintNetLog();
 }

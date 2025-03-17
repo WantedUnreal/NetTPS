@@ -19,6 +19,9 @@ public:
 	bool bHasPistol = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool isDead = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float dirH;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

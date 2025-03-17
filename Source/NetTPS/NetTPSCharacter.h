@@ -133,5 +133,11 @@ public:
 	void DamageProcess(float damage);
 	// HPBar billboard 처리
 	void BillboardHP();
+
+	// 죽었니?
+	bool isDead = false;
+
+
+	void PrintNetLog();
 };
 

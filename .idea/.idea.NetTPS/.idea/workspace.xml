@@ -14,7 +14,11 @@
   <component name="ChangeListManager">
     <list default="true" id="2afd122c-7abd-45d6-859f-d7ff018f70af" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.NetTPS/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NetTPS/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Net/Blueprints/BP_ThirdPersonCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Net/Blueprints/BP_ThirdPersonCharacter.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Net/Animations/ABP_Manny.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Net/Animations/ABP_Manny.uasset" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/NetTPS/HealthBar.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/HealthBar.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/NetTPS/HealthBar.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/HealthBar.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetPlayerAnimInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetPlayerAnimInstance.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetPlayerAnimInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetPlayerAnimInstance.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.h" afterDir="false" />
     </list>
@@ -164,6 +168,7 @@
       <updated>1741304160465</updated>
       <workItem from="1741304161833" duration="11469000" />
       <workItem from="1741564125490" duration="16069000" />
+      <workItem from="1742169334227" duration="10879000" />
     </task>
     <servers />
   </component>
@@ -173,16 +178,5 @@
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/Source/NetTPS/HealthBar.cpp</url>
-          <line>18</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>

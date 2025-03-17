@@ -27,5 +27,5 @@ public:
 	virtual  void NativeConstruct() override;
 
 	// HP 갱신
-	void UpdateHPBar(float damage);
+	float UpdateHPBar(float damage);
 };

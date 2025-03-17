@@ -21,6 +21,8 @@ void UNetPlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	{
 		// 총 들고 있는지 여부 설정
 		bHasPistol = player->bHasPistol;
+		// 죽었는지 여부 설정
+		isDead = player->isDead;
 
 		// 좌 / 우 에 따른 애니메이션 값
 		dirH = FVector::DotProduct(player->GetVelocity(), player->GetActorRightVector());
