@@ -16,6 +16,9 @@ void APistol::BeginPlay()
 {
 	Super::BeginPlay();
 
+	SetReplicates(true);
+	SetReplicateMovement(true);
+	
 	// 현재 총알 갯수 초기화
 	currBulletCount = maxBulletCount;
 }

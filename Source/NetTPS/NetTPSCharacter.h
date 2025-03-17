@@ -64,7 +64,18 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 	void TakePistol();
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_TakePistol();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_AttachPistol(class APistol* pistol);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_DetachPistol(class APistol* pistol);
+	
 	void Fire();
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_Fire();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_Fire(bool bHit, FHitResult hitInfo);
 			
 
 protected:
@@ -76,6 +87,8 @@ protected:
 	virtual void NotifyControllerChanged() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
 public:
 	/** Returns CameraBoom subobject **/
@@ -99,8 +112,10 @@ public:
 	bool bReloading = false;
 	
 	// 어떤 총을 들고 있는지
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing=AttachPistol)
 	class APistol* ownedPistol = nullptr;
+	UFUNCTION()
+	void AttachPistol();
 
 	// 총을 집을 수 있는 범위
 	UPROPERTY(EditAnywhere)
@@ -125,6 +140,10 @@ public:
 
 	// 총알 재장전 시작
 	void Reload();
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_Reload();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_Reload();
 
 	// 총알 재장전 완료
 	void ReloadComplete();
