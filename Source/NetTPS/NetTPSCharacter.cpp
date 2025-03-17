@@ -15,6 +15,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Pistol.h"
 #include "MainUI.h"
+#include "MyInterface.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -252,7 +253,45 @@ void ANetTPSCharacter::Look(const FInputActionValue& Value)
 
 void ANetTPSCharacter::TakePistol()
 {
-	ServerRPC_TakePistol();
+	TArray<AActor*> allActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), allActors);
+	TArray<AActor*> allMyInterface;
+	for (int32 i = 0; i < allActors.Num(); i++)
+	{
+		IMyInterface* my = Cast<IMyInterface>(allActors[i]);
+		if (my == nullptr) continue;
+		allMyInterface.Add(allActors[i]);
+	}
+
+	// 현재까지 최단거리 (초기 값을 float 의 최대치로)
+	float closestDist = std::numeric_limits<float>::max();
+	// 현재까지 최단거리의 MyInterface
+	AActor* closestMy = nullptr;
+		
+	for (int32 i = 0; i < allMyInterface.Num(); i++)
+	{
+		// 나와 총의 거리를 구하자.
+		float dist = FVector::Distance(allMyInterface[i]->GetActorLocation(), GetActorLocation());
+
+		// 그 거리가 총을 주울 수 있는 범위 밖에 있으면
+		if (dist > distanceToGun) continue;			
+			
+		// 그 거리가 최단거리보다 작으면
+		if (dist < closestDist)
+		{
+			// 최단거리 갱신
+			closestDist = dist;
+			// 최단거리 총 갱신
+			closestMy = allMyInterface[i];
+		}			
+	}
+
+	if (closestMy)
+	{
+		Cast<IMyInterface>(closestMy)->FAction(this);
+	}
+	
+	//ServerRPC_TakePistol();
 }
 
 void ANetTPSCharacter::ServerRPC_TakePistol_Implementation()
@@ -263,7 +302,7 @@ void ANetTPSCharacter::ServerRPC_TakePistol_Implementation()
 		// 바닥에 있는 총을 검색하자.
 		TArray<AActor*> allPistols;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APistol::StaticClass(), allPistols);
-
+		
 		// 현재까지 최단거리 (초기 값을 float 의 최대치로)
 		float closestDist = std::numeric_limits<float>::max();
 		// 현재까지 최단거리의 총

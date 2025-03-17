@@ -5,16 +5,16 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "MyInterface.h"
-#include "Pistol.generated.h"
+#include "DoorActor.generated.h"
 
 UCLASS()
-class NETTPS_API APistol : public AActor, public IMyInterface
+class NETTPS_API ADoorActor : public AActor, public IMyInterface
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	APistol();
+	ADoorActor();
 
 protected:
 	// Called when the game starts or when spawned
@@ -24,12 +24,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void FAction(AActor* actor) override;
-
 public:
-	// 최대 총알 갯수
-	float maxBulletCount = 10;
-	// 현재 총알 갯수
-	float currBulletCount = 0;
+	UPROPERTY(EditAnywhere)
+	class USceneComponent* compPivot;
+	UPROPERTY(EditAnywhere)
+	class UStaticMeshComponent* compMesh;
 
+	bool isOpen = false;
+	void OpenClose();
+
+	virtual void FAction(AActor* actor) override;
 };

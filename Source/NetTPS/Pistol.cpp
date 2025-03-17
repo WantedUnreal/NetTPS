@@ -3,6 +3,8 @@
 
 #include "Pistol.h"
 
+#include "NetTPSCharacter.h"
+
 // Sets default values
 APistol::APistol()
 {
@@ -28,5 +30,10 @@ void APistol::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void APistol::FAction(AActor* actor)
+{
+	Cast<ANetTPSCharacter>(actor)->ServerRPC_TakePistol();
 }
 
