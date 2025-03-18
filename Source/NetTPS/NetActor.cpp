@@ -5,6 +5,7 @@
 
 #include "NetTPSCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -31,6 +32,14 @@ void ANetActor::BeginPlay()
 	// 1초마다 색변경 하는 타이머
 	FTimerHandle colorHandle;
 	GetWorldTimerManager().SetTimer(colorHandle, this, &ANetActor::ChangeColor, 1.0f, true);
+
+	// 1초마다 크기변경 하는 타이머
+	FTimerHandle scaleHandle;
+	GetWorldTimerManager().SetTimer(scaleHandle, this, &ANetActor::ChangeScale, 1.0f, true);
+
+	// 1초마다 위치변경 하는 타이머
+	FTimerHandle locationHandle;
+	GetWorldTimerManager().SetTimer(locationHandle, this, &ANetActor::ChangeLocation, 1.0f, true);
 }
 
 void ANetActor::GetLifetimeReplicatedProps(
@@ -123,6 +132,45 @@ void ANetActor::ChangeColor()
 	OnRep_ChangeColor();
 }
 
+void ANetActor::ChangeScale()
+{
+	// 만약에 Owner 가 나의 Pawn 으로 되어있다면
+	if (GetOwner() == GetWorld()->GetFirstPlayerController()->GetPawn())
+	//if (!HasAuthority())
+	{
+		// 서버에게 크기 변경 요청
+		ServerRPC_ChangeScale();
+	}
+}
+
+void ANetActor::ServerRPC_ChangeScale_Implementation()
+{
+	// 랜덤한 크기값을 뽑자.
+	float rand = FMath::RandRange(0.5f, 2.0f);
+	// 뽑은 크기값을을 모든 클라이언트에게 보내자.
+	MulitcastRPC_ChangeScale(FVector(rand));
+}
+
+void ANetActor::MulitcastRPC_ChangeScale_Implementation(FVector scale)
+{
+	SetActorScale3D(scale);
+}
+
+void ANetActor::ChangeLocation()
+{
+	// 만약에 서버가 아니면 함수 나가자.
+	if (HasAuthority() == false) return;
+
+	// 랜텀 위치 
+	FVector rand = UKismetMathLibrary::RandomPointInBoundingBox(GetActorLocation(), FVector(100));
+	// 뽑은 위치 값을 모든 클라이언트에게 보내자.
+	MulitcastRPC_ChangeLocation(rand);
+}
+
+void ANetActor::MulitcastRPC_ChangeLocation_Implementation(FVector location)
+{
+	SetActorLocation(location);
+}
 
 
 

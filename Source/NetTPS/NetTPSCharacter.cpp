@@ -17,6 +17,7 @@
 #include "MainUI.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -112,8 +113,18 @@ void ANetTPSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	}
 }
 
+void ANetTPSCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ANetTPSCharacter, ownedPistol);
+}
+
 void ANetTPSCharacter::InitBulletUI()
 {
+	// 만약에  내 것이 아니라면 함수를 나가자.
+	if (IsLocallyControlled() == false) return;
+	
 	// 현재 총알 다 지우자.
 	mainUI->PopBulletAll();
 	
@@ -126,6 +137,9 @@ void ANetTPSCharacter::InitBulletUI()
 
 void ANetTPSCharacter::Reload()
 {
+	// 내것이 아니라면 함수를 나가자.
+	if (IsLocallyControlled() == false) return;
+	
 	// 만약에 총을 들고 있지 않으면 함수 나가자.
 	if (bHasPistol == false) return;
 
@@ -135,6 +149,18 @@ void ANetTPSCharacter::Reload()
 	// 만약에 총알이 최대라면 함수를 나가자.
 	if (ownedPistol->currBulletCount == ownedPistol->maxBulletCount) return;
 
+	// 서버에게 재장전 요청
+	ServerRPC_Reload();
+}
+
+void ANetTPSCharacter::ServerRPC_Reload_Implementation()
+{
+	// 모든 클라이언트에게 재장전 해라!
+	MulticastRPC_Reload();	
+}
+
+void ANetTPSCharacter::MulticastRPC_Reload_Implementation()
+{
 	// 재장전 중이다라고 설정
 	bReloading = true;
 
@@ -224,7 +250,15 @@ void ANetTPSCharacter::Look(const FInputActionValue& Value)
 }
 
 void ANetTPSCharacter::TakePistol()
-{	
+{
+	// 서버에게 요청
+	ServerRPC_TakePistol();
+	
+	
+}
+
+void ANetTPSCharacter::ServerRPC_TakePistol_Implementation()
+{
 	// 내가 총을 들고 있지 않다면
 	if (bHasPistol == false)
 	{
@@ -265,27 +299,11 @@ void ANetTPSCharacter::TakePistol()
 			ownedPistol = Cast<APistol>(closestPistol);
 			// 소유자를 나로 설정
 			ownedPistol->SetOwner(this);
-
-			// 현재 총을 들고 있는 상태
-			bHasPistol = true;
-
-			// 물리적인 움직임을 꺼주자.
-			UStaticMeshComponent* comp = ownedPistol->GetComponentByClass<UStaticMeshComponent>();
-			comp->SetSimulatePhysics(false);
-			// 검색된 총을 compGun 에 자식으로 붙이자.
-			ownedPistol->AttachToComponent(compGun, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-
-			// 총 들었을 때 움직이는 설정 변경
-			bUseControllerRotationYaw = true;
-			GetCharacterMovement()->bOrientRotationToMovement = false;
-			CameraBoom->TargetArmLength = 150;
-			CameraBoom->SetRelativeLocation(FVector(0, 40, 60));
-
-			// crosshair 보이게
-			mainUI->ShowCrosshair(true);
-
-			// 총알 갯수 설정
-			InitBulletUI();
+			
+			AttachPistol();
+			
+			// 모든 클라이언트에게 ownedPistol 을 들어라!
+			//MulticastRPC_AttachPistol(ownedPistol);
 		}			
 	}
 
@@ -295,26 +313,73 @@ void ANetTPSCharacter::TakePistol()
 	{
 		// 만약에 재장전 중이라면 함수를 나가자.
 		if (bReloading) return;
-		
-		// 물리적인 움직임 켜주자.
-		UStaticMeshComponent* comp = ownedPistol->GetComponentByClass<UStaticMeshComponent>();
-		comp->SetSimulatePhysics(true);
-		// 총을 바닥에 떨어뜨리자.
-		ownedPistol->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
-		// 현재 총을 들고 있지 않은 상태
-		bHasPistol = false;
 
+		APistol* pistol = ownedPistol;
+		
 		// 소유자를 없게 하자.
 		ownedPistol->SetOwner(nullptr);
 		// 현재 들고 있는 총을 nullptr 로!
 		ownedPistol = nullptr;
+		
+		// 모든 클라이언트에게 총을 놔라 요청
+		MulticastRPC_DetachPistol(pistol);
+	}
+}
 
-		// 총 들었을 때 움직이는 설정 변경
-		bUseControllerRotationYaw = false;
-		GetCharacterMovement()->bOrientRotationToMovement = true;
-		CameraBoom->TargetArmLength = 400;
-		CameraBoom->SetRelativeLocation(FVector(0, 0, 0));
+void ANetTPSCharacter::MulticastRPC_AttachPistol_Implementation(APistol* pistol)
+{	
+}
 
+void ANetTPSCharacter::AttachPistol()
+{
+	if (ownedPistol == nullptr) return;
+	
+	// 현재 총을 들고 있는 상태
+	bHasPistol = true;
+
+	// 물리적인 움직임을 꺼주자.
+	UStaticMeshComponent* comp = ownedPistol->GetComponentByClass<UStaticMeshComponent>();
+	comp->SetSimulatePhysics(false);
+	// 검색된 총을 compGun 에 자식으로 붙이자.
+	ownedPistol->AttachToComponent(compGun, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+	// 총 들었을 때 움직이는 설정 변경
+	bUseControllerRotationYaw = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+	CameraBoom->TargetArmLength = 150;
+	CameraBoom->SetRelativeLocation(FVector(0, 40, 60));
+
+	// 만약에 내캐릭터라면
+	if (IsLocallyControlled())
+	{			
+		// crosshair 보이게
+		mainUI->ShowCrosshair(true);
+
+		// 총알 갯수 설정
+		InitBulletUI();
+	}
+}
+
+void ANetTPSCharacter::MulticastRPC_DetachPistol_Implementation(
+	class APistol* pistol)
+{
+	// 물리적인 움직임 켜주자.
+	UStaticMeshComponent* comp = pistol->GetComponentByClass<UStaticMeshComponent>();
+	comp->SetSimulatePhysics(true);
+	// 총을 바닥에 떨어뜨리자.
+	pistol->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+	// 현재 총을 들고 있지 않은 상태
+	bHasPistol = false;		
+
+	// 총 들었을 때 움직이는 설정 변경
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	CameraBoom->TargetArmLength = 400;
+	CameraBoom->SetRelativeLocation(FVector(0, 0, 0));
+
+	// 만약에 내 Player 라면
+	if (IsLocallyControlled())
+	{
 		// crosshair 보이지 않게
 		mainUI->ShowCrosshair(false);
 		// 총알 UI 모두 삭제
@@ -331,6 +396,12 @@ void ANetTPSCharacter::Fire()
 	// 만약에 재장전 중이면 함수를 나가자.
 	if (bReloading) return;
 	
+	// 서버에게 총쏘기 요청
+	ServerRPC_Fire();
+}
+
+void ANetTPSCharacter::ServerRPC_Fire_Implementation()
+{
 	// 시작 지점
 	FVector startPos = FollowCamera->GetComponentLocation();
 	// 종료 지점
@@ -342,6 +413,14 @@ void ANetTPSCharacter::Fire()
 	FHitResult hitInfo;
 	// LineTrace 실행
 	bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECollisionChannel::ECC_Visibility, params);
+
+	// 모든 클라이언트에게 bHit, hitInfo  전달
+	MulticastRPC_Fire(bHit, hitInfo);
+}
+
+void ANetTPSCharacter::MulticastRPC_Fire_Implementation(bool bHit,
+	FHitResult hitInfo)
+{
 	// 만약에 부딪히였다면
 	if (bHit)
 	{
@@ -361,20 +440,32 @@ void ANetTPSCharacter::Fire()
 	PlayAnimMontage(fireMontage, 2.0f, TEXT("Fire"));
 	// 총알 소모
 	ownedPistol->currBulletCount--;
-	// 총알 UI 하나 제거
-	mainUI->PopBullet(ownedPistol->currBulletCount);
+
+	// 내 Player 일때만
+	if (IsLocallyControlled())
+	{
+		// 총알 UI 하나 제거
+		mainUI->PopBullet(ownedPistol->currBulletCount);
+	}
 }
 
 void ANetTPSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// MainUI 만들자
-	mainUI = CreateWidget<UMainUI>(GetWorld(), mainUIWidget);
-	mainUI->AddToViewport();
-
 	// HPBar 그림자 지우자.
 	compHP->SetCastShadow(false);
+
+	// 만약에 내 Player 라면
+	if (IsLocallyControlled())
+	{
+		// MainUI 만들자
+		mainUI = CreateWidget<UMainUI>(GetWorld(), mainUIWidget);
+		mainUI->AddToViewport();
+		
+		// compHP 를 안보이게 하자.
+		compHP->SetVisibility(false);
+	}
 }
 
 void ANetTPSCharacter::Tick(float DeltaSeconds)
@@ -400,5 +491,5 @@ void ANetTPSCharacter::Tick(float DeltaSeconds)
 	// HealtBar 계속 나를 바라보게
 	BillboardHP();
 
-	PrintNetLog();
+	//PrintNetLog();
 }

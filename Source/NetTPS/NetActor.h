@@ -50,7 +50,21 @@ public:
 
 	UFUNCTION()
 	void ChangeColor();
-	
+
+	// 크기 변경
+	void ChangeScale();
+	// 서버에게 크기변경 요청
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_ChangeScale();
+	// 모든 클라이언트에게 크기변경 요청
+	UFUNCTION(NetMulticast, Reliable)
+	void MulitcastRPC_ChangeScale(FVector scale);
+
+	// 위치 변경
+	void ChangeLocation();
+	// 모든 클라이언트에게 위치변경 요청
+	UFUNCTION(NetMulticast, Reliable)
+	void MulitcastRPC_ChangeLocation(FVector location);
 };
 
 
