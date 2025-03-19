@@ -25,12 +25,27 @@ public:
 	// 총알 위젯 클래스
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> bulletUIFactory;
-	
 
+	// hp UI
+	UPROPERTY()
+	class UHealthBar* hpBar;
+
+	// damage UI
+	UPROPERTY(meta = (BindWidget))
+	class UImage* damageUI;
+	// damage UI 투명값
+	float damageUIOpacity = 0;
+
+	// 다시 하기 버튼
+	UPROPERTY(meta = (BindWidget))
+	class UButton* btnRetry;
+	
 public:
 	virtual void NativeConstruct() override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 	
 	void ShowCrosshair(bool bShow);
+	void ShowBtnRetry(bool bShow);
 
 	// 총알 추가
 	void AddBullet();
@@ -39,5 +54,12 @@ public:
 	void PopBullet(int32 index);
 	// 총알 모두 삭제
 	void PopBulletAll();
+
+	// Damage UI 나와라!
+	void PlayDamagerUI();
+
+	// 다시하기 버튼 클릭했을 때 호출되는 함수
+	UFUNCTION()
+	void OnRetry();
 };
 

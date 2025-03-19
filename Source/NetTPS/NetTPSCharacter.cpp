@@ -15,6 +15,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Pistol.h"
 #include "MainUI.h"
+#include "NetworkMessage.h"
 #include "Components/WidgetComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -120,6 +121,15 @@ void ANetTPSCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 	DOREPLIFETIME(ANetTPSCharacter, ownedPistol);
 }
 
+// 서버에서만 호출 된다!!! (PlayerController 가 현재 Pawn 에 빙의 되었을 때 호출되는 함수)
+void ANetTPSCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	// 이 캐릭터의 주인인 사람한테 완료됐다고 알려주자.
+	ClientRPC_InitMainUI();
+}
+
 void ANetTPSCharacter::InitBulletUI()
 {
 	// 만약에  내 것이 아니라면 함수를 나가자.
@@ -181,14 +191,59 @@ void ANetTPSCharacter::ReloadComplete()
 void ANetTPSCharacter::DamageProcess(float damage)
 {
 	// HealthBar 클래스 가져오자.
-	UHealthBar* hpBar =  Cast<UHealthBar>(compHP->GetWidget());
+	UHealthBar* hpBar = nullptr;
+	// 만약에 내 Player 라면
+	if (IsLocallyControlled())
+	{
+		// MainUI 에 있는 healthBar를 hpBar 에 설정
+		hpBar = mainUI->hpBar;
+		// 피격 UI 실행
+		mainUI->PlayDamagerUI();
+	}
+	// 그렇지 않으면
+	else
+	{
+		// compHP 에 있는 healthBar를 hpBar 에 설정
+		hpBar = Cast<UHealthBar>(compHP->GetWidget());		
+	}
+	
 	// 가져온 클래스에 있는 UpdateHPBar 실행
 	float hp = hpBar->UpdateHPBar(damage);
 	// 만약에 hp 0보다 작으면
 	if (hp <= 0)
 	{
-		// 죽어라
-		isDead = true;
+		DieProcess();		
+	}
+}
+
+void ANetTPSCharacter::DieProcess()
+{
+	// 죽어라
+	isDead = true;
+	// 움직이지 못하게
+	GetCharacterMovement()->DisableMovement();
+	// 충돌되지 않게
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+
+	// 내 캐릭터라면
+	if (IsLocallyControlled())
+	{
+		// 화면 회색 처리
+		FollowCamera->PostProcessSettings.ColorSaturation = FVector4(0, 0, 0, 1);
+
+		// 다시하기 버튼 보이게
+		mainUI->ShowBtnRetry(true);
+
+		// 마우스 버튼 나타나게
+		GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
+		
+		// 만약에 총을 들고 있다면
+		if (bHasPistol)
+		{
+			// 총을 놓자
+			TakePistol();			
+		}
 	}
 }
 
@@ -200,6 +255,16 @@ void ANetTPSCharacter::BillboardHP()
 	FRotator rot = UKismetMathLibrary::MakeRotFromXZ(-cam->GetActorForwardVector(), cam->GetActorUpVector());
 	// compHP 를 구한  Rotator 값으로 설정.
 	compHP->SetWorldRotation(rot);
+}
+
+void ANetTPSCharacter::ClientRPC_InitMainUI_Implementation()
+{
+	// MainUI 만들자
+	mainUI = CreateWidget<UMainUI>(GetWorld(), mainUIWidget);
+	mainUI->AddToViewport();
+	
+	// compHP 를 안보이게 하자.
+	compHP->SetVisibility(false);	
 }
 
 void ANetTPSCharacter::PrintNetLog()
@@ -262,6 +327,8 @@ void ANetTPSCharacter::ServerRPC_TakePistol_Implementation()
 	// 내가 총을 들고 있지 않다면
 	if (bHasPistol == false)
 	{
+		if (isDead == true) return;
+		
 		// 바닥에 있는 총을 검색하자.
 		TArray<AActor*> allPistols;
 		UGameplayStatics::GetAllActorsOfClass(GetWorld(), APistol::StaticClass(), allPistols);
@@ -456,16 +523,7 @@ void ANetTPSCharacter::BeginPlay()
 	// HPBar 그림자 지우자.
 	compHP->SetCastShadow(false);
 
-	// 만약에 내 Player 라면
-	if (IsLocallyControlled())
-	{
-		// MainUI 만들자
-		mainUI = CreateWidget<UMainUI>(GetWorld(), mainUIWidget);
-		mainUI->AddToViewport();
-		
-		// compHP 를 안보이게 하자.
-		compHP->SetVisibility(false);
-	}
+	
 }
 
 void ANetTPSCharacter::Tick(float DeltaSeconds)

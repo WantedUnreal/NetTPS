@@ -93,6 +93,8 @@ protected:
 
 	virtual void GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const override;
 
+	virtual void PossessedBy(AController* NewController) override;
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -151,12 +153,17 @@ public:
 
 	// 피격 당했을 때 호출되는 함수
 	void DamageProcess(float damage);
+	// 죽었을 때 호출되는 함수
+	void DieProcess();
 	// HPBar billboard 처리
 	void BillboardHP();
 
 	// 죽었니?
 	bool isDead = false;
 
+	// 빙의 됐을때 알려주는 함수
+	UFUNCTION(Client, Reliable)
+	void ClientRPC_InitMainUI();
 
 	void PrintNetLog();
 };
