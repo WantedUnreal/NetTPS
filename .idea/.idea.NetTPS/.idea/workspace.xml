@@ -12,18 +12,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2afd122c-7abd-45d6-859f-d7ff018f70af" name="변경" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.NetTPS/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NetTPS/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Net/Blueprints/BP_ThirdPersonCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Net/Blueprints/BP_ThirdPersonCharacter.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/D/DE/SWSI13675DVYIZ0N4NF7Y3.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/MainUI.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/MainUI.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetPlayerController.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetPlayerController.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetPlayerController.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetPlayerController.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPSGameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPSGameMode.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPSGameMode.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPSGameMode.h" afterDir="false" />
-    </list>
+    <list default="true" id="2afd122c-7abd-45d6-859f-d7ff018f70af" name="변경" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -173,7 +162,7 @@
       <workItem from="1742169334227" duration="10879000" />
       <workItem from="1742255785141" duration="12907000" />
       <workItem from="1742342132066" duration="9943000" />
-      <workItem from="1742428450678" duration="7771000" />
+      <workItem from="1742428450678" duration="8396000" />
     </task>
     <servers />
   </component>
