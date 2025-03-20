@@ -15,8 +15,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Pistol.h"
 #include "MainUI.h"
+#include "NetTPSGameMode.h"
 #include "NetworkMessage.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/PlayerStart.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 
@@ -262,9 +264,9 @@ void ANetTPSCharacter::ClientRPC_InitMainUI_Implementation()
 	// MainUI 만들자
 	mainUI = CreateWidget<UMainUI>(GetWorld(), mainUIWidget);
 	mainUI->AddToViewport();
-	
+
 	// compHP 를 안보이게 하자.
-	compHP->SetVisibility(false);	
+	compHP->SetVisibility(false);
 }
 
 void ANetTPSCharacter::PrintNetLog()
@@ -523,7 +525,14 @@ void ANetTPSCharacter::BeginPlay()
 	// HPBar 그림자 지우자.
 	compHP->SetCastShadow(false);
 
-	
+	// 만약에 서버라면
+	if (HasAuthority())
+	{
+		// 게임모드 가져와서
+		ANetTPSGameMode* gm = Cast<ANetTPSGameMode>(GetWorld()->GetAuthGameMode());
+		// AddPlayer 실행
+		gm->AddPlayer(this);		
+	}
 }
 
 void ANetTPSCharacter::Tick(float DeltaSeconds)

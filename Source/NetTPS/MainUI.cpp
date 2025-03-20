@@ -88,7 +88,7 @@ void UMainUI::OnRetry()
 	// Player 를 다시 시작하는 기능 : GameMode
 	// UnPossess, Possess 기능 : PlayerController
 	ANetPlayerController* pc = Cast<ANetPlayerController>(GetWorld()->GetFirstPlayerController());
-	pc->ServerRPC_RespawnPlayer();
+	pc->ServerRPC_ChangeToSpectator();
 	pc->SetShowMouseCursor(false);
 
 	// 나를 삭제하자.

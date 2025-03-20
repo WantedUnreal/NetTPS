@@ -14,6 +14,10 @@ class NETTPS_API ANetPlayerController : public APlayerController
 {
 	GENERATED_BODY()
 public:
+
+	// 관전자 모드로 변경해줘
 	UFUNCTION(Server, Reliable)
-	void ServerRPC_RespawnPlayer();
+	void ServerRPC_ChangeToSpectator();
+	
+	void RespawnPlayer();
 };

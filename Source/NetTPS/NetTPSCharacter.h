@@ -166,5 +166,9 @@ public:
 	void ClientRPC_InitMainUI();
 
 	void PrintNetLog();
+
+	// cube 블루프린트 클래스
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> cubeFactory;
 };
 
