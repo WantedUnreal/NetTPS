@@ -10,7 +10,8 @@ public class NetTPS : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
-			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "UMG"
+			"Core", "CoreUObject", "Engine", "InputCore", 
+			"EnhancedInput", "UMG", "OnlineSubsystem", "OnlineSubsystemSteam"
 		});
 	}
 }

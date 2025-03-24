@@ -16,10 +16,14 @@ void APistol::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Replicate 가능하게
-	SetReplicates(true);
-	// 위치 동기화 가능하게
-	SetReplicateMovement(true);
+	if (HasAuthority())
+	{
+		// Replicate 가능하게
+		SetReplicates(true);
+		// 위치 동기화 가능하게
+		SetReplicateMovement(true);
+	}
+	
 
 	// 현재 총알 갯수 초기화
 	currBulletCount = maxBulletCount;

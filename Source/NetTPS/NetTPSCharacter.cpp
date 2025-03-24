@@ -121,6 +121,7 @@ void ANetTPSCharacter::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ANetTPSCharacter, ownedPistol);
+	DOREPLIFETIME(ANetTPSCharacter, canMakeCube);
 }
 
 // 서버에서만 호출 된다!!! (PlayerController 가 현재 Pawn 에 빙의 되었을 때 호출되는 함수)
@@ -278,6 +279,36 @@ void ANetTPSCharacter::PrintNetLog()
 	FString logStr = FString ::Printf(TEXT("Connection : %s\r\nOwner : %s\r\nMine : %s"), *conStr, *ownerStr, *mineStr);
 	
 	DrawDebugString(GetWorld(), GetActorLocation(), logStr, nullptr, FColor::Yellow, 0, true);
+}
+
+void ANetTPSCharacter::MakeCube()
+{
+	if (canMakeCube == false) return;
+	if (IsLocallyControlled() == false) return; 
+	
+	ServerRPC_MakeCube();
+}
+
+void ANetTPSCharacter::ServerRPC_MakeCube_Implementation()
+{
+	// 게임 모드 가져오자.
+	ANetTPSGameMode* gm = Cast<ANetTPSGameMode>(GetWorld()->GetAuthGameMode());	
+	// 가져온 게임 모드의 ChangeTurn 함수 실행.
+	gm->ChangeTurn();
+	
+	// 만약에 cube 의 Replicated 가 false 일 때 생성 동기화 하고 싶으면
+	// Multicast RPC 이용해서 아래 코드를 실행시키다.
+
+	FVector pos = GetActorLocation() + GetActorForwardVector() * 200;
+	MulticastRPC_MakeCube(pos, GetActorRotation());
+}
+
+void ANetTPSCharacter::MulticastRPC_MakeCube_Implementation(FVector pos, FRotator rot)
+{
+	AActor* cube = GetWorld()->SpawnActor(cubeFactory);
+	
+	cube->SetActorLocation(pos);
+	cube->SetActorRotation(rot);
 }
 
 void ANetTPSCharacter::Move(const FInputActionValue& Value)
@@ -544,10 +575,10 @@ void ANetTPSCharacter::Tick(float DeltaSeconds)
 	{
 		Reload();
 	}
-	// 만약에 R 키를 떼었다면
-	if (GetWorld()->GetFirstPlayerController()->WasInputKeyJustReleased(EKeys::R))
+	// 만약에 M 키를 눌렀다면
+	if (GetWorld()->GetFirstPlayerController()->WasInputKeyJustPressed(EKeys::M))
 	{
-		
+		MakeCube();
 	}
 	// 만약에 R 키를 누르고 있다면
 	if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::R))

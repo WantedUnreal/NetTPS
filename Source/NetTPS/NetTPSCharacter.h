@@ -170,5 +170,15 @@ public:
 	// cube 블루프린트 클래스
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<AActor> cubeFactory;
+	// 큐브 만드는 함수
+	void MakeCube();
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_MakeCube();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastRPC_MakeCube(FVector pos, FRotator rot);
+
+	// Turn 기능 관련
+	UPROPERTY(Replicated)
+	bool canMakeCube = false;
 };
 
