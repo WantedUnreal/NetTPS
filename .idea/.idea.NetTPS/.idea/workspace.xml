@@ -14,17 +14,9 @@
   <component name="ChangeListManager">
     <list default="true" id="2afd122c-7abd-45d6-859f-d7ff018f70af" name="변경" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.NetTPS/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NetTPS/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Config/DefaultEngine.ini" beforeDir="false" afterPath="$PROJECT_DIR$/Config/DefaultEngine.ini" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/Net/Blueprints/MyCube.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Net/Blueprints/MyCube.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/3/P3/O43ETCZTFMLWWH1CJ941H2.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/3/P3/O43ETCZTFMLWWH1CJ941H2.uasset" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Content/__ExternalActors__/ThirdPerson/Maps/ThirdPersonMap/7/OZ/1OENE8K9JIMC7XKEYL97Q9.uasset" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/NetTPS.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/NetTPS.uproject" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPS.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPS.Build.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPSCharacter.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPSGameMode.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPSGameMode.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetTPSGameMode.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetTPSGameMode.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/Pistol.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/Pistol.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Content/Net/Maps/LobbyMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Net/Maps/LobbyMap.umap" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetGameInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetGameInstance.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetGameInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetGameInstance.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -177,6 +169,8 @@
       <workItem from="1742342132066" duration="9943000" />
       <workItem from="1742428450678" duration="8396000" />
       <workItem from="1742774201016" duration="7584000" />
+      <workItem from="1742860665623" duration="2973000" />
+      <workItem from="1742864246297" duration="1207000" />
     </task>
     <servers />
   </component>
