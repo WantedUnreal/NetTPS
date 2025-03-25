@@ -68,7 +68,7 @@ void UNetGameInstance::OnCreateSessionComplete(FName sessionName,
 
 void UNetGameInstance::FindOtherSession()
 {
-	UE_LOG(LogTemp, Warning, TEXT("세션 검색 시작1"));
+	UE_LOG(LogTemp, Warning, TEXT("세션 검색 시작5"));
 	
 	// sessionSearch 만들자.
 	sessionSearch = MakeShared<FOnlineSessionSearch>();
