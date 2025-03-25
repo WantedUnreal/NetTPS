@@ -45,7 +45,6 @@ void UNetGameInstance::CreateMySession(FString diaplayName, int32 playerCount)
 	sessionSettings.NumPublicConnections = playerCount;
 	// 커스텀 정보 (세션 이름)
 	sessionSettings.Set(FName(TEXT("DP_NAME")), diaplayName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
-	sessionSettings.Set(FName(TEXT("TEAM")), FString(TEXT("Wanted")), EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 	// 세션 생성
 	sessionInterface->CreateSession(0, FName(diaplayName), sessionSettings);
@@ -80,7 +79,6 @@ void UNetGameInstance::FindOtherSession()
 
 	// 어떤 옵션을 기준으로 검색
 	sessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
-	sessionSearch->QuerySettings.Set(FName(TEXT("TEAM")), FString(TEXT("Wanted")), EOnlineComparisonOp::Equals);
 
 	// 위 설정을 가지고 세션 검색
 	sessionInterface->FindSessions(0, sessionSearch.ToSharedRef());
