@@ -111,6 +111,12 @@ void UNetGameInstance::JoinOtherSession()
 
 	// 세션 이름 가져오자.
 	FString displayName;
+	// 5.5 이슈
+	// SessionSettings 의 bUseLobbiesIfAvailable 와 bUsesPresence 의 값이 false 로 되어있다.
+	results[0].Session.SessionSettings.bUseLobbiesIfAvailable = true;
+	results[0].Session.SessionSettings.bUsesPresence = true;
+
+
 	results[0].Session.SessionSettings.Get(FName(TEXT("DP_NAME")), displayName);
 
 	// 세션 참여
