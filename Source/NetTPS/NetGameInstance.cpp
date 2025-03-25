@@ -35,6 +35,7 @@ void UNetGameInstance::CreateMySession(FString diaplayName, int32 playerCount)
 	UE_LOG(LogTemp, Warning, TEXT("서브시스템 이름 : %s"), *subsysName.ToString());
 	sessionSettings.bIsLANMatch = subsysName.IsEqual(FName(TEXT("NULL")));
 
+
 	// Lobby 를 사용할지 여부
 	sessionSettings.bUseLobbiesIfAvailable = true;
 	// 친구 상태를 확인할 수 있는 여부
