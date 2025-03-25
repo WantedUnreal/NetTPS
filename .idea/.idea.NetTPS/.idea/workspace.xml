@@ -16,7 +16,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/.idea.NetTPS/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.NetTPS/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Net/Maps/LobbyMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Net/Maps/LobbyMap.umap" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetGameInstance.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetGameInstance.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/NetTPS/NetGameInstance.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/NetTPS/NetGameInstance.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -171,6 +170,7 @@
       <workItem from="1742774201016" duration="7584000" />
       <workItem from="1742860665623" duration="2973000" />
       <workItem from="1742864246297" duration="1207000" />
+      <workItem from="1742870587962" duration="3159000" />
     </task>
     <servers />
   </component>
