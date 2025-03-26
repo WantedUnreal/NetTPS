@@ -30,7 +30,7 @@ public:
 
 	// 세션 참여
 	UFUNCTION(BlueprintCallable)
-	void JoinOtherSession();
+	void JoinOtherSession(int32 sessionIdx);
 	void OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result);
 
 public:

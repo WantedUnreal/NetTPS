@@ -16,6 +16,9 @@ void ULobbyUI::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	// 마우스 활성화
+	GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(true);
+
 	// GameInstance 가져오자
 	gi = Cast<UNetGameInstance>(GetWorld()->GetGameInstance());
 	// create 버튼 눌렀을 때 호출되는 함수 등록
@@ -43,6 +46,9 @@ void ULobbyUI::OnClickGoCreateRoom()
 void ULobbyUI::OnClickGoFindRoom()
 {
 	WidgetSwitcher->SetActiveWidgetIndex(2);
+
+	// 세션 검색화면 넘어갈때 자동으로 한번 세션을 검색
+	OnClickFind();
 }
 
 void ULobbyUI::CreateSession()
@@ -67,7 +73,16 @@ void ULobbyUI::OnValueChanged(float Value)
 
 void ULobbyUI::OnClickFind()
 {
+	// Scroll_RoomList 자식들 다 지우자.
+	Scroll_RoomList->ClearChildren();
+
+	// 검색시작
 	gi->FindOtherSession();
+
+	// 검색 버튼 문구 바꿔주고
+	Text_BtnFind->SetText(FText::FromString(TEXT("Finding...")));
+	// 검색 버튼 비활성화
+	Btn_Find->SetIsEnabled(false);
 }
 
 void ULobbyUI::OnClickBack()
@@ -77,12 +92,24 @@ void ULobbyUI::OnClickBack()
 
 void ULobbyUI::OnFindComplete(int32 idx, FString info)
 {
-	// SessionItem 하나 만들자
-	USessionItem* item = CreateWidget<USessionItem>(GetWorld(), sessionItemFactory);
-	// 만들어진 SessionItem 을 Scroll_RoomList 에 자식으로!
-	Scroll_RoomList->AddChild(item);
-	// 만들어진 SessionItem 의 Text 내용변경! idx 전달
-	item->SetInfo(idx, info);
+	// 만약에 idx 가 -1 이면
+	if (idx == -1)
+	{
+		// 검색 버튼 내용 수정
+		Text_BtnFind->SetText(FText::FromString(TEXT("FIND")));
+		// 검색 버튼 활성
+		Btn_Find->SetIsEnabled(true);
+	}
+	// 그렇지 않으면
+	else
+	{
+		// SessionItem 하나 만들자
+		USessionItem* item = CreateWidget<USessionItem>(GetWorld(), sessionItemFactory);
+		// 만들어진 SessionItem 을 Scroll_RoomList 에 자식으로!
+		Scroll_RoomList->AddChild(item);
+		// 만들어진 SessionItem 의 Text 내용변경! idx 전달
+		item->SetInfo(idx, info);
+	}
 }
 
 

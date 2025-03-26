@@ -81,6 +81,9 @@ void UNetGameInstance::FindOtherSession()
 	// 어떤 옵션을 기준으로 검색
 	sessionSearch->QuerySettings.Set(SEARCH_LOBBIES, true, EOnlineComparisonOp::Equals);
 
+	// 검색 갯수
+	sessionSearch->MaxSearchResults = 100;
+
 	// 위 설정을 가지고 세션 검색
 	sessionInterface->FindSessions(0, sessionSearch.ToSharedRef());
 }
@@ -105,9 +108,12 @@ void UNetGameInstance::OnFindSessionComplete(bool bWasSuccessful)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("세션 검색 실패"));
 	}
+
+	// 검색 최종적으로 끝!
+	onFindComplete.ExecuteIfBound(-1, FString());
 }
 
-void UNetGameInstance::JoinOtherSession()
+void UNetGameInstance::JoinOtherSession(int32 sessionIdx)
 {
 	auto results = sessionSearch->SearchResults;
 	if(results.Num() == 0) return;
@@ -116,14 +122,14 @@ void UNetGameInstance::JoinOtherSession()
 	FString displayName;
 	// 5.5 이슈
 	// SessionSettings 의 bUseLobbiesIfAvailable 와 bUsesPresence 의 값이 false 로 되어있다.
-	results[0].Session.SessionSettings.bUseLobbiesIfAvailable = true;
-	results[0].Session.SessionSettings.bUsesPresence = true;
+	results[sessionIdx].Session.SessionSettings.bUseLobbiesIfAvailable = true;
+	results[sessionIdx].Session.SessionSettings.bUsesPresence = true;
 
 
-	results[0].Session.SessionSettings.Get(FName(TEXT("DP_NAME")), displayName);
+	results[sessionIdx].Session.SessionSettings.Get(FName(TEXT("DP_NAME")), displayName);
 
 	// 세션 참여
-	sessionInterface->JoinSession(0, FName(displayName), results[0]);
+	sessionInterface->JoinSession(0, FName(displayName), results[sessionIdx]);
 }
 
 void UNetGameInstance::OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result)

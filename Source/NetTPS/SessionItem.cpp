@@ -2,6 +2,7 @@
 
 
 #include "SessionItem.h"
+#include "NetGameInstance.h"
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 
@@ -14,6 +15,8 @@ void USessionItem::NativeConstruct()
 
 void USessionItem::OnClickJoin()
 {
+	UNetGameInstance* gi = Cast<UNetGameInstance>(GetWorld()->GetGameInstance());
+	gi->JoinOtherSession(roomIdx);
 }
 
 void USessionItem::SetInfo(int32 idx, FString info)

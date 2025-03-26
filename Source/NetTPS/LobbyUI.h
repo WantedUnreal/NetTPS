@@ -66,6 +66,8 @@ public:
 	class UButton* Btn_BackFromFind;
 	UPROPERTY(meta = (BindWidget))
 	class UScrollBox* Scroll_RoomList;
+	UPROPERTY(meta = (BindWidget))
+	class UTextBlock* Text_BtnFind;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class USessionItem> sessionItemFactory;
 
