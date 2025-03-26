@@ -32,7 +32,7 @@ void UNetGameInstance::CreateMySession(FString diaplayName, int32 playerCount)
 
 	// Lan 사용 여부
 	FName subsysName = IOnlineSubsystem::Get()->GetSubsystemName();
-	UE_LOG(LogTemp, Warning, TEXT("서브시스템 이름1 : %s"), *subsysName.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("서브시스템 이름2 : %s"), *subsysName.ToString());
 	sessionSettings.bIsLANMatch = subsysName.IsEqual(FName(TEXT("NULL")));
 
 
@@ -45,6 +45,8 @@ void UNetGameInstance::CreateMySession(FString diaplayName, int32 playerCount)
 	// 세션 최대 인원 설정
 	sessionSettings.NumPublicConnections = playerCount;
 	// 커스텀 정보 (세션 이름)
+	// base64 로 Encode
+	diaplayName = StringBase64Encode(diaplayName);
 	sessionSettings.Set(FName(TEXT("DP_NAME")), diaplayName, EOnlineDataAdvertisementType::ViaOnlineServiceAndPing);
 
 	// 세션 생성
@@ -68,7 +70,7 @@ void UNetGameInstance::OnCreateSessionComplete(FName sessionName,
 
 void UNetGameInstance::FindOtherSession()
 {
-	UE_LOG(LogTemp, Warning, TEXT("세션 검색 시작5"));
+	UE_LOG(LogTemp, Warning, TEXT("세션 검색 시작6"));
 	
 	// sessionSearch 만들자.
 	sessionSearch = MakeShared<FOnlineSessionSearch>();
@@ -99,6 +101,10 @@ void UNetGameInstance::OnFindSessionComplete(bool bWasSuccessful)
 		{
 			FString displayName;
 			results[i].Session.SessionSettings.Get(FName(TEXT("DP_NAME")), displayName);
+
+			// base64 Decode
+			displayName = StringBase64Decode(displayName);
+
 			UE_LOG(LogTemp, Warning, TEXT("세션 - %d, 이름 : %s"), i, *displayName);
 
 			onFindComplete.ExecuteIfBound(i, displayName);
@@ -144,6 +150,24 @@ void UNetGameInstance::OnJoinSessionComplete(FName sessionName, EOnJoinSessionCo
 		APlayerController* pc = GetWorld()->GetFirstPlayerController();
 		pc->ClientTravel(url, TRAVEL_Absolute);
 	}
+}
+
+FString UNetGameInstance::StringBase64Encode(FString str)
+{
+	// Set 할 때 : FString -> UTF8 -> TArray<uint8> -> base64 로 Encode
+	std::string utf8String = TCHAR_TO_UTF8(*str);
+	TArray<uint8> arrayData = TArray<uint8>((uint8*)utf8String.c_str(), utf8String.length());
+
+	return FBase64::Encode(arrayData);
+}
+
+FString UNetGameInstance::StringBase64Decode(FString str)
+{
+	// Get 할 때 : base64 를 Decode -> TArray<uint8> -> TCHAR
+	TArray<uint8> arrayData;
+	FBase64::Decode(str, arrayData);	
+	std::string utf8String((char*)arrayData.GetData(), arrayData.Num());
+	return UTF8_TO_TCHAR(utf8String.c_str());
 }
 
 

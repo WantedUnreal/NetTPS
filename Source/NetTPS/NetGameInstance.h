@@ -33,6 +33,10 @@ public:
 	void JoinOtherSession(int32 sessionIdx);
 	void OnJoinSessionComplete(FName sessionName, EOnJoinSessionCompleteResult::Type result);
 
+	// 스팀으로 했을때 한글 깨짐현상 관련
+	FString StringBase64Encode(FString str);
+	FString StringBase64Decode(FString str);
+
 public:
 	// 세션의 모든 처리를 진행
 	IOnlineSessionPtr sessionInterface;
