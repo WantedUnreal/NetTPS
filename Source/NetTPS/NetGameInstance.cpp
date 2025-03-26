@@ -32,7 +32,7 @@ void UNetGameInstance::CreateMySession(FString diaplayName, int32 playerCount)
 
 	// Lan 사용 여부
 	FName subsysName = IOnlineSubsystem::Get()->GetSubsystemName();
-	UE_LOG(LogTemp, Warning, TEXT("서브시스템 이름 : %s"), *subsysName.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("서브시스템 이름1 : %s"), *subsysName.ToString());
 	sessionSettings.bIsLANMatch = subsysName.IsEqual(FName(TEXT("NULL")));
 
 
@@ -97,6 +97,8 @@ void UNetGameInstance::OnFindSessionComplete(bool bWasSuccessful)
 			FString displayName;
 			results[i].Session.SessionSettings.Get(FName(TEXT("DP_NAME")), displayName);
 			UE_LOG(LogTemp, Warning, TEXT("세션 - %d, 이름 : %s"), i, *displayName);
+
+			onFindComplete.ExecuteIfBound(i, displayName);
 		}
 	}
 	else

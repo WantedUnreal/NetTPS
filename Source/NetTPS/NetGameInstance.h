@@ -6,9 +6,9 @@
 #include "Interfaces/OnlineSessionInterface.h"
 #include "NetGameInstance.generated.h"
 
-/**
- * 
- */
+// 세션 검색 완료시 호출되는 함수 등록하는 Delegate
+DECLARE_DELEGATE_TwoParams(FFindComplete, int32, FString);
+
 UCLASS()
 class NETTPS_API UNetGameInstance : public UGameInstance
 {
@@ -39,4 +39,7 @@ public:
 
 	// 세션 검색할 때 사용하는 객체
 	TSharedPtr<FOnlineSessionSearch> sessionSearch;
+
+	// 세션 검색 완료시 호출되는 Delegate
+	FFindComplete onFindComplete;
 };

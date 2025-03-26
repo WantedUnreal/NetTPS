@@ -64,11 +64,20 @@ public:
 	class UButton* Btn_Find;
 	UPROPERTY(meta = (BindWidget))
 	class UButton* Btn_BackFromFind;
+	UPROPERTY(meta = (BindWidget))
+	class UScrollBox* Scroll_RoomList;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class USessionItem> sessionItemFactory;
+
 
 	UFUNCTION()
 	void OnClickFind();
 	UFUNCTION()
 	void OnClickBack();
+
+
+	void OnFindComplete(int32 idx, FString info);
+
 };
 
 
