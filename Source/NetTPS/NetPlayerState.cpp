@@ -7,6 +7,7 @@
 void ANetPlayerState::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
+	SetNetUpdateFrequency(100);
 }
 
 void ANetPlayerState::PreInitializeComponents()
