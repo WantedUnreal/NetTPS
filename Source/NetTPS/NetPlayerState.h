@@ -30,6 +30,7 @@ public:
 
 	virtual void OnRep_PlayerId() override;
 
+	UFUNCTION()
 	void OnPlayerStatePawnSet(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);
 
 public:
