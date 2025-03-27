@@ -7,6 +7,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
+#include "GameFramework/PlayerState.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "HealthBar.h"
@@ -513,6 +514,19 @@ void ANetTPSCharacter::ServerRPC_Fire_Implementation()
 	FHitResult hitInfo;
 	// LineTrace 실행
 	bool bHit = GetWorld()->LineTraceSingleByChannel(hitInfo, startPos, endPos, ECollisionChannel::ECC_Visibility, params);
+
+	// 만약에 맞은 액터가 Player 라면 점수 올리자
+	ANetTPSCharacter* player = Cast<ANetTPSCharacter>(hitInfo.GetActor());
+	if (player)
+	{
+		// 자신의 PlayerState 가져오자.
+		APlayerState* ps = GetPlayerState();
+		// 점수 올리자.
+		ps->SetScore(ps->GetScore() + 10);
+		// 점수 변경 함수 호출
+		ps->OnRep_Score();
+	}
+
 
 	// 모든 클라이언트에게 bHit, hitInfo  전달
 	MulticastRPC_Fire(bHit, hitInfo);
