@@ -33,6 +33,12 @@ public:
 	UFUNCTION()
 	void OnPlayerStatePawnSet(APlayerState* Player, APawn* NewPawn, APawn* OldPawn);
 
+	// 채팅 전송, 받기
+	UFUNCTION(Server, Reliable)
+	void ServerRPC_SendChat(const FString& chat);
+	UFUNCTION(NetMulticast, Reliable)
+	void MuliticastRPC_SendChat(const FString& chat);
+
 public:
 	FUpdateName onUpdateName;
 	FUpdateScore onUpdateScore;

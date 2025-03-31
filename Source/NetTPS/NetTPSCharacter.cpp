@@ -18,6 +18,7 @@
 #include "MainUI.h"
 #include "NetTPSGameMode.h"
 #include "NetworkMessage.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -594,10 +595,15 @@ void ANetTPSCharacter::Tick(float DeltaSeconds)
 	{
 		MakeCube();
 	}
-	// 만약에 R 키를 누르고 있다면
-	if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::R))
+	// 만약에 왼쪽 컨트롤 키를 누르고 있다면
+	if (GetWorld()->GetFirstPlayerController()->IsInputKeyDown(EKeys::LeftControl))
 	{
-		
+		if (IsLocallyControlled())
+		{
+			APlayerController* pc = Cast<APlayerController>(Controller);
+			UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(pc);
+			pc->SetShowMouseCursor(true);
+		}
 	}
 
 	// HealtBar 계속 나를 바라보게

@@ -2,6 +2,8 @@
 
 
 #include "NetPlayerState.h"
+
+#include "GameUI.h"
 #include "NetGameState.h"
 
 void ANetPlayerState::OnConstruction(const FTransform& Transform)
@@ -59,3 +61,20 @@ void ANetPlayerState::OnPlayerStatePawnSet(APlayerState* Player, APawn* NewPawn,
 		// PlayerState 의 이름, 점수, 아이디, Pawn 모두 셋팅되어 있다.
 	}
 }
+
+void ANetPlayerState::ServerRPC_SendChat_Implementation(const FString& chat)
+{
+	// 채팅 내용을 ---> 이름 : 채팅내용		
+	FString sendChat = FString::Printf(TEXT("%s : %s"), *GetPlayerName(), *chat);
+
+	MuliticastRPC_SendChat(sendChat);
+}
+
+void ANetPlayerState::MuliticastRPC_SendChat_Implementation(const FString& chat)
+{
+	// GameState 가져오자
+	ANetGameState* gs = Cast<ANetGameState>(GetWorld()->GetGameState());
+	// GameUI 의 AddChat 함수 실행
+	gs->gameUI->AddChat(chat);
+}
+

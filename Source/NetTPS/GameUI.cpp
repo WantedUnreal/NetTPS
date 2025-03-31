@@ -5,6 +5,11 @@
 
 #include "PlayerStateUI.h"
 #include "NetPlayerState.h"
+#include "ChatItemUI.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Components/Border.h"
+#include "Components/EditableTextBox.h"
+#include "Components/ScrollBox.h"
 #include "Components/VerticalBox.h"
 #include "Components/VerticalBoxSlot.h"
 
@@ -18,6 +23,18 @@ public:
 	}
 };
 
+
+
+void UGameUI::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	// EditableTextBox 에서 엔터쳤을 때 호출되는 함수 등록
+	Edit_Chat->OnTextCommitted.AddDynamic(this, &UGameUI::OnTextBoxCommitted);
+
+	// Border_Empty 클릭 이벤트 함수 등록
+	Border_Empty->OnMouseButtonDownEvent.BindDynamic(this, &UGameUI::OnPointerEvent);
+}
 
 void UGameUI::AddPlayerStateUI(APlayerState* ps)
 {
@@ -52,4 +69,63 @@ void UGameUI::Alignment(UVerticalBoxSlot* s)
 {
 	s->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Right);
 	s->SetPadding(FMargin(0, 0, 20, 0));
+}
+
+void UGameUI::AddChat(FString chat)
+{
+	// 현재 스크롤 된 값
+	float scrollOffset = Scroll_Chat->GetScrollOffset();
+	// 스크롤이 맨 끝일때의 값
+	float scrollEndofOffset = Scroll_Chat->GetScrollOffsetOfEnd();
+	
+	// ChatItem 을 만들어서 Scroll_Chat 에 자식으로!
+	UChatItemUI* chatItem = CreateWidget<UChatItemUI>(GetWorld(), chatItemFactory);
+	Scroll_Chat->AddChild(chatItem);
+	chatItem->SetContent(chat);	
+
+	// 만약에 스크롤이 맨 끝이라면
+	if (scrollOffset == scrollEndofOffset)
+	{
+		// 개행이된 내용은 ScrollToEnd 동작을 정상적으로 하지 않는 문제때문에 0.01초 뒤에 실행되게 하자.
+		FTimerHandle handle;
+		GetWorld()->GetTimerManager().SetTimer(handle, [this]()
+		{
+			// 강제로 스크롤을 맨 끝으로 이동시키자.
+			Scroll_Chat->ScrollToEnd();
+		}, 0.01f, false);		
+	}
+}
+
+void UGameUI::OnTextBoxCommitted(const FText& Text,
+                                 ETextCommit::Type CommitMethod)
+{
+	// 만약에 Enter 를 쳤다면
+	if (CommitMethod == ETextCommit::Type::OnEnter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *Text.ToString());
+
+		// 서버에게 채팅을 전달
+		// PlayerState 가져오자.
+		APlayerController* pc = GetWorld()->GetFirstPlayerController();
+		ANetPlayerState* ps = pc->GetPlayerState<ANetPlayerState>();
+		ps->ServerRPC_SendChat(Text.ToString());
+		
+		// Edit_Chat 내용을 초기화
+		Edit_Chat->SetText(FText());
+	}
+	// 만약에 Enter 를 친 후 Focus 를 잃었다면
+	else if (CommitMethod == ETextCommit::Type::OnCleared)
+	{
+		// 강제로 Edit_Chat 에 Focus 를 하자.
+		Edit_Chat->SetFocus();
+	}
+}
+
+FEventReply UGameUI::OnPointerEvent(FGeometry MyGeometry,
+	const FPointerEvent& MouseEvent)
+{
+	APlayerController* pc = GetWorld()->GetFirstPlayerController();
+	UWidgetBlueprintLibrary::SetInputMode_GameOnly(pc);
+	pc->SetShowMouseCursor(false);
+	return FEventReply();
 }
